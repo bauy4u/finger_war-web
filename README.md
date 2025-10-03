@@ -90,10 +90,9 @@
 
 ### 2. 克隆仓库
 ```bash
-git clone https://github.com/your-username/finger-war-online.git
-cd finger-war-online
+git clone https://github.com/bauy4u/finger_war-web.git
+cd finger_war-web
 ```
-*(请将 `your-username/finger-war-online.git` 替换为你的实际仓库地址)*
 
 ### 3. 安装依赖
 在项目根目录下打开终端，运行以下命令来安装所有必需的 Node.js 模块：

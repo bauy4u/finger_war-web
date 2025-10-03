@@ -1,0 +1,401 @@
+/* 全局样式 */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    margin: 0;
+    padding: 10px 0;
+    overflow-x: hidden;
+    font-size: 14px;
+}
+#app-container {
+    width: 100%;
+    padding: 0 10px;
+    box-sizing: border-box;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+h1, h2, h3, h4, h5 { color: #1d2129; margin-top: 0; }
+h1 { font-size: 1.8em; }
+h2 { font-size: 1.4em; }
+.hidden { display: none !important; }
+
+#turn-timer {
+    margin-left: 10px;
+    color: #dc3545;
+    font-weight: bold;
+}
+
+/* 主内容布局 */
+#main-content {
+    display: flex;
+    width: 100%;
+    gap: 20px;
+    flex-direction: column;
+}
+#game-board {
+    flex-grow: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+}
+#skill-table {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* 游戏设置 */
+#room-management {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.room-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+}
+.create-room-section, .join-room-section { display: flex; flex-direction: column; gap: 10px; padding: 15px; border: 1px solid #eee; border-radius: 6px; }
+#room-id-input { text-transform: uppercase; }
+#room-info { font-weight: bold; font-size: 1.1em; color: #007bff; min-height: 1.5em; margin-top: 15px; }
+input[type="text"], input[type="password"], select { padding: 12px; font-size: 16px; border: 1px solid #dddfe2; border-radius: 6px; }
+
+/* 自定义游戏设置样式 */
+.custom-game-options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 10px 0;
+    text-align: left;
+}
+.custom-game-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.custom-game-option label {
+    font-size: 14px;
+    color: #606770;
+}
+.custom-game-option input[type="number"] {
+    width: 60px;
+    padding: 8px;
+    text-align: center;
+}
+.custom-game-option div {
+    display: flex;
+    gap: 5px;
+}
+
+/* 游戏主面板 */
+#players-container { display: flex; justify-content: center; flex-wrap: wrap; width: 100%; gap: 10px; }
+.player-card {
+    position: relative;
+    background-color: white;
+    border: 2px solid #dddfe2;
+    border-radius: 8px;
+    width: 45%;
+    min-width: 150px;
+    height: 220px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.3s;
+    cursor: default;
+    overflow: hidden;
+}
+.player-card.is-targetable { cursor: pointer; border-color: #ffc107; }
+.player-card.is-targetable:hover { border-color: #e0a800; transform: scale(1.05); }
+.player-card.current-turn { border-color: #1877f2; transform: translateY(-5px) scale(1.03); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+.player-card.is-dead { opacity: 0.5; }
+.player-hands { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
+
+/* 手牌 */
+.hand {
+    background-color: #f8f9fa;
+    border: 3px solid transparent;
+    border-radius: 8px;
+    width: 60px;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    transition: all 0.2s ease-in-out;
+    color: #333;
+    text-shadow: none;
+}
+.hand-number { font-size: 28px; }
+.item-name { font-size: 12px; color: #606770; margin-top: 5px; font-weight: normal; }
+.hand.is-selectable { cursor: pointer; }
+.hand.is-selectable:hover { transform: scale(1.1); }
+.hand.selected-attacker { border-color: #28a745; background-color: #d4edda; }
+.hand.selected-target { border-color: #dc3545; background-color: #f8d7da; }
+
+/* 动画样式 */
+.card-clone { position: fixed; z-index: 1000; pointer-events: none; }
+.damage-popup { position: absolute; top: 40%; left: 50%; transform: translateX(-50%); font-size: 36px; font-weight: bold; color: #dc3545; text-shadow: 2px 2px 4px white; animation: floatUp 1.2s ease-out forwards; pointer-events: none; z-index: 1001; }
+@keyframes floatUp { 0% { transform: translate(-50%, 0); opacity: 1; } 100% { transform: translate(-50%, -80px); opacity: 0; } }
+.particle { position: fixed; background: red; border-radius: 50%; pointer-events: none; z-index: 1002; }
+.screen-shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+@keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
+
+/* 操作面板 */
+#action-panel-container { width: 100%; display: flex; flex-direction: column; flex-grow: 1; }
+#add-number-panel, #action-phase-panel { background-color: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); width: 100%; box-sizing: border-box; text-align: center; }
+
+/* 技能按钮 */
+#skill-buttons-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 15px; }
+.skill-btn { background-color: #28a745; }
+.combo-btn { background-color: #ffc107; color: #333; }
+.combo-btn:hover:not(:disabled) { background-color: #e0a800; }
+.end-turn-btn { background-color: #6c757d; }
+.end-turn-btn:hover:not(:disabled) { background-color: #5a6268; }
+
+button { padding: 12px 15px; border: none; border-radius: 6px; background-color: #1877f2; color: white; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.2s; margin: 0 5px; }
+button:hover:not(:disabled) { background-color: #166fe5; }
+button:disabled { background-color: #ccd0d5; cursor: not-allowed; }
+
+/* 游戏日志与聊天区 */
+#game-log { background-color: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); width: 100%; box-sizing: border-box; display: flex; flex-direction: column; }
+#log-list {
+    height: 200px;
+    list-style-type: none; padding: 0 10px 0 0; margin: 0; overflow-y: auto; text-align: left; font-size: 14px;
+}
+#log-list li { padding: 8px; border-bottom: 1px solid #eee; }
+.system-message { color: #606770; font-style: italic; }
+.chat-message { color: #1d2129; }
+.chat-message strong { color: #007bff; }
+#chat-form { display: flex; margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; }
+#chat-input { flex-grow: 1; border-right: none; border-radius: 6px 0 0 6px; }
+#chat-form button { border-radius: 0 6px 6px 0; margin: 0; padding: 10px 15px; }
+
+/* 弹窗 */
+#game-over-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+.modal-content { background: white; padding: 30px; border-radius: 8px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); width: 90%; box-sizing: border-box; }
+
+/* 技能表 */
+#skill-table h5 { margin-top: 15px; margin-bottom: 5px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+#skill-table table { width: 100%; border-collapse: collapse; font-size: 14px; }
+#skill-table td { padding: 6px; border-bottom: 1px solid #f0f0f0; }
+#skill-table td:first-child { font-weight: bold; text-align: center; width: 40px; }
+
+/* 认证和用户信息样式 */
+#auth-container {
+    background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center;
+    width: 90%;
+    max-width: 400px;
+    margin: 20px auto;
+}
+#user-profile { padding: 15px; background-color: #e7f3ff; border: 1px solid #b3d7ff; width: 100%; box-sizing: border-box; }
+#auth-container form { display: flex; flex-direction: column; gap: 15px; margin-bottom: 15px; }
+#auth-container input { width: 100%; box-sizing: border-box; }
+#user-profile p { margin: 5px 0; }
+#logout-btn { background-color: #dc3545; padding: 8px 15px; font-size: 14px; margin-top: 10px; }
+#logout-btn:hover { background-color: #c82333; }
+
+/* 玩家卡片背景图样式 */
+.player-card { background-size: cover; background-position: center; color: white; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
+.player-card-content { position: relative; z-index: 2; background-color: rgba(0, 0, 0, 0.4); padding: 15px; border-radius: 6px; height: 100%; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; }
+.player-card.is-dead .player-card-content { background-color: rgba(50, 50, 50, 0.7); }
+.player-card h3, .player-card p { color: white; font-size: 0.9em; }
+
+/* 上传模态框样式 */
+#upload-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+#upload-modal .modal-content { width: 90%; max-width: 500px; }
+#cropper-container { margin: 20px 0; height: 300px; background-color: #f7f7f7; }
+#image-to-crop { display: block; max-width: 100%; }
+.modal-actions { margin-top: 20px; }
+#show-upload-modal-btn { background-color: #007bff; padding: 8px 15px; font-size: 14px; margin-top: 10px; }
+#show-upload-modal-btn:hover { background-color: #0069d9; }
+
+/* 大厅样式 */
+.lobby-layout-container {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    flex-direction: column;
+}
+.lobby-left-panel, .lobby-right-panel { width: 100%; }
+#lobby-container { margin-top: 0; width: 100%; background-color: #fafafa; padding: 20px; border-radius: 8px; border: 1px solid #eee; box-sizing: border-box; }
+#lobby-container h2 { margin-bottom: 15px; }
+#lobby-container h3 { margin-bottom: 10px; }
+
+
+#room-list-table { width: 100%; border-collapse: collapse; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-size: 13px; }
+#room-list-table th, #room-list-table td { padding: 10px 8px; border-bottom: 1px solid #ddd; text-align: center; }
+#room-list-table th { background-color: #f2f2f2; font-weight: bold; }
+#room-list-table tr:hover { background-color: #f9f9f9; }
+#room-list-table .join-lobby-btn { padding: 6px 10px; font-size: 13px; background-color: #28a745; }
+#room-list-table .join-lobby-btn:hover { background-color: #218838; }
+#create-room-password, #join-room-password { width: 100%; box-sizing: border-box; }
+
+
+/* 媒体查询 */
+@media (min-width: 992px) {
+    body {
+        font-size: 16px;
+        padding: 20px 0;
+    }
+    h1 { font-size: 2.5em; }
+    h2 { font-size: 1.8em; }
+    #main-content {
+        flex-direction: row;
+    }
+    #skill-table {
+        flex-basis: 280px;
+        flex-shrink: 0;
+        padding: 20px;
+    }
+    #room-management {
+        width: 90%;
+        max-width: 1000px;
+        padding: 30px;
+    }
+    .lobby-layout-container {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 30px;
+    }
+    .lobby-left-panel {
+        flex: 1;
+        min-width: 300px;
+    }
+    .lobby-right-panel {
+        flex: 1.5;
+    }
+    .player-card {
+        min-width: 200px;
+        height: 260px;
+        width: auto;
+    }
+    .player-card-content {
+        padding: 20px;
+    }
+    .player-card h3, .player-card p {
+        font-size: 1em;
+    }
+    .player-hands {
+        gap: 20px;
+        margin-top: 15px;
+    }
+    .hand {
+        width: 70px;
+        height: 90px;
+    }
+    .hand-number {
+        font-size: 32px;
+    }
+    .item-name {
+        font-size: 13px;
+    }
+    #players-container {
+        gap: 20px;
+    }
+    #log-list {
+        height: 350px;
+    }
+    #auth-container {
+        width: 400px;
+    }
+    #add-number-panel, #action-phase-panel {
+        padding: 20px;
+    }
+}
+
+/* +++ 修改开始：排行榜样式重构 +++ */
+
+/* 1. 新的滚动容器样式 */
+.leaderboard-container {
+    max-height: 270px; /* 设置最大高度，大约是5行多一点 */
+    overflow-y: auto;  /* 当内容超出时，显示垂直滚动条 */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* 2. 表格本身样式 */
+#leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+/* 3. 粘性表头！ */
+#leaderboard-table thead th {
+    position: sticky; /* 核心！让表头粘住 */
+    top: 0;            /* 粘在滚动容器的顶部 */
+    background-color: #f2f2f2;
+    z-index: 1; /* 确保表头在滚动内容之上 */
+    padding: 10px 8px;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid #ddd;
+}
+
+/* 4. 普通单元格样式 */
+#leaderboard-table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+    vertical-align: middle;
+}
+
+#leaderboard-table tr:last-child td {
+    border-bottom: none; /* 最后一行不需要底边框 */
+}
+
+/* 5. 辅助样式（保持不变） */
+.leaderboard-player-cell {
+    display: flex;
+    align-items: center;
+}
+
+.leaderboard-card-preview {
+    width: 30px;
+    height: 39px;
+    margin-right: 10px;
+    border-radius: 4px;
+    background-size: cover;
+    background-position: center;
+    background-color: #e9ecef;
+    flex-shrink: 0;
+    border: 1px solid #ddd;
+}
+
+.online-status {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.online-status.online {
+    background-color: #28a745;
+}
+
+.online-status.offline {
+    background-color: #6c757d;
+}
+/* +++ 修改结束 +++ */

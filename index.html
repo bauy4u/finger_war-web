@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>一加一武器版 (联机版)</title>
+    <title>一加一武器版 | 竞技场</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,400;0,700;1,900&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
     <link rel="stylesheet" href="style.css">
     <script src="/socket.io/socket.io.js"></script>
@@ -11,165 +15,322 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 </head>
 <body>
+    <div class="bg-animation">
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+    </div>
+
     <div id="app-container">
-        <h1>一加一武器版</h1>
+        <header class="main-header">
+            <h1>1+1 WEAPON <span class="accent">EDITION</span></h1>
+            <p class="subtitle">策略 · 算术 · 乱斗</p>
+        </header>
 
         <div id="auth-container">
             <div id="login-view">
-                <h2>登录</h2>
+                <h2><span class="icon">🔐</span> 身份验证</h2>
                 <form id="login-form">
-                    <input type="text" id="login-username" placeholder="输入用户名" required>
-                    <input type="password" id="login-password" placeholder="输入密码" required>
-                    <button type="submit">登录</button>
+                    <div class="input-group">
+                        <input type="text" id="login-username" placeholder=" " required>
+                        <label>用户名</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="login-password" placeholder=" " required>
+                        <label>密码</label>
+                    </div>
+                    <button type="submit" class="btn-primary glow">进入游戏</button>
                 </form>
-                <p>还没有账号？ <a href="#" id="show-register">立即注册</a></p>
+                <p class="switch-auth">还没有账号？ <a href="#" id="show-register">立即注册</a></p>
             </div>
             <div id="register-view" class="hidden">
-                <h2>注册</h2>
+                <h2><span class="icon">📝</span> 新建档案</h2>
                 <form id="register-form">
-                    <input type="text" id="register-username" placeholder="输入用户名 (登录用)" required maxlength="10">
-                    <input type="password" id="register-password" placeholder="输入密码" required>
-                    <input type="text" id="register-nickname" placeholder="输入游戏昵称 (显示用)" required maxlength="10">
-                    <button type="submit">注册</button>
+                    <div class="input-group">
+                        <input type="text" id="register-username" placeholder=" " required maxlength="10">
+                        <label>用户名 (登录用)</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="register-password" placeholder=" " required>
+                        <label>密码</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="register-nickname" placeholder=" " required maxlength="10">
+                        <label>游戏昵称 (显示用)</label>
+                    </div>
+                    <button type="submit" class="btn-primary glow">确认注册</button>
                 </form>
-                <p>已有账号？ <a href="#" id="show-login">返回登录</a></p>
+                <p class="switch-auth">已有账号？ <a href="#" id="show-login">返回登录</a></p>
             </div>
         </div>
 
-
-        <div id="room-management" class="hidden">
-            <div id="user-profile">
-                <p>欢迎你, <b id="profile-nickname"></b>!</p>
-                <p>战绩: <span id="profile-stats"></span></p>
-                <button id="show-upload-modal-btn">更换卡片背景</button>
-                <button id="logout-btn">退出登录</button>
+        <div id="room-management" class="hidden glass-panel">
+            <div class="dashboard-header">
+                <div id="user-profile">
+                    <div class="avatar-circle">👤</div>
+                    <div class="user-info-text">
+                        <p class="welcome">Welcome, <b id="profile-nickname">Player</b></p>
+                        <div class="stats-row">
+                            <span class="badge stats-badge">🏆 <span id="profile-stats">0/0</span></span>
+                            <span class="badge gold-badge">💰 <span id="profile-gold">0</span></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="dashboard-actions">
+                    <button id="show-upload-modal-btn" class="btn-secondary">🖼️ 换卡面</button>
+                    <button id="shop-btn" class="btn-warning">✨ 商店</button>
+                    <button id="gm-panel-btn" class="btn-purple hidden">🔧 GM</button>
+                    <button id="logout-btn" class="btn-danger">退出</button>
+                </div>
             </div>
 
             <div class="lobby-layout-container">
-                <!-- 左侧面板 -->
                 <div class="lobby-left-panel">
-                    <h2>房间操作</h2>
-                    <div class="room-actions">
+                    <div class="panel-card">
+                        <h3>创建战局</h3>
                         <div class="create-room-section">
-                            <select id="max-players-select">
-                                <option value="2">2人房</option>
-                                <option value="3">3人房</option>
-                                <option value="4">4人房</option>
-                            </select>
-                            <input type="password" id="create-room-password" placeholder="可选：设置房间密码" maxlength="10">
+                            <div class="form-row">
+                                <select id="max-players-select" class="modern-select">
+                                    <option value="2">1v1 对决</option>
+                                    <option value="3">3人 乱斗</option>
+                                    <option value="4">4人 混战</option>
+                                </select>
+                                <input type="password" id="create-room-password" placeholder="密码 (可选)" maxlength="10">
+                            </div>
                             
                             <div class="custom-game-options-container">
                                 <div class="custom-game-option">
-                                    <label for="initial-health">初始血量:</label>
+                                    <label>初始血量</label>
                                     <input type="number" id="initial-health" value="10" min="1" max="99">
                                 </div>
                                 <div class="custom-game-option">
-                                    <label>初始双手:</label>
-                                    <div>
+                                    <label>初始手牌</label>
+                                    <div class="mini-inputs">
                                         <input type="number" id="initial-hand-1" value="1" min="0" max="9">
                                         <input type="number" id="initial-hand-2" value="1" min="0" max="9">
                                     </div>
                                 </div>
                             </div>
 
-                            <button id="create-room-btn">创建房间</button>
-                        </div>
-                        <div class="join-room-section">
-                            <input type="text" id="room-id-input" placeholder="输入4位房间号" maxlength="4">
-                            <input type="password" id="join-room-password" placeholder="输入密码 (如有)" maxlength="10">
-                            <button id="join-room-btn">加入房间</button>
+                            <button id="create-room-btn" class="btn-primary full-width">立即创建</button>
                         </div>
                     </div>
-                    <p id="room-info"></p>
+
+                    <div class="panel-card mt-4">
+                        <h3>加入战局</h3>
+                        <div class="join-room-section">
+                            <input type="text" id="room-id-input" placeholder="输入4位房间号" maxlength="4" class="code-input">
+                            <input type="password" id="join-room-password" placeholder="密码 (如有)" maxlength="10">
+                            <button id="join-room-btn" class="btn-success full-width">加入</button>
+                        </div>
+                    </div>
+                    <p id="room-info" class="status-text"></p>
                 </div>
 
-                <!-- 右侧面板 (游戏大厅) -->
                 <div id="lobby-container" class="lobby-right-panel">
-                    <h3>玩家胜率榜</h3>
-                    <!-- +++ 修改开始：为表格添加一个用于滚动的父容器 +++ -->
-                    <div class="leaderboard-container">
-                        <table id="leaderboard-table">
+                    <div class="tabs-header">
+                        <h3>📊 实时榜单</h3>
+                    </div>
+                    <div class="leaderboard-container custom-scrollbar">
+                        <table id="leaderboard-table" class="modern-table">
                             <thead>
                                 <tr>
-                                    <th>排名</th>
+                                    <th>#</th>
                                     <th>玩家</th>
-                                    <th>胜率</th>
+                                    <th>积分</th>
                                     <th>状态</th>
                                 </tr>
                             </thead>
-                            <tbody id="leaderboard-body">
-                                <!-- 排行榜将通过JS动态插入这里 -->
-                            </tbody>
+                            <tbody id="leaderboard-body"></tbody>
                         </table>
                     </div>
-                    <!-- +++ 修改结束 +++ -->
                     
-                    <h2 style="margin-top: 20px;">游戏大厅</h2>
-                    <table id="room-list-table">
-                        <thead>
-                            <tr>
-                                <th>房号</th>
-                                <th>人数</th>
-                                <th>状态</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="room-list-body">
-                            <!-- 房间列表将通过JS动态插入这里 -->
-                        </tbody>
-                    </table>
+                    <div class="tabs-header mt-4">
+                        <h3>🌍 活跃房间</h3>
+                    </div>
+                    <div class="room-list-container custom-scrollbar">
+                        <table id="room-list-table" class="modern-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>人数</th>
+                                    <th>权限</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="room-list-body"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-
         </div>
 
         <div id="main-content" class="hidden">
-            <div id="game-board">
+            <div class="game-header-bar">
                 <h2 id="turn-indicator">
-                    <span id="turn-indicator-text"></span>
+                    <span id="turn-indicator-text">游戏加载中...</span>
                     <span id="turn-timer" class="hidden"></span>
                 </h2>
-                <div id="players-container"></div>
-                <div id="action-panel-container">
-                    <div id="add-number-panel"><p id="action-prompt"></p><div class="action-buttons"><button id="confirm-add-btn" disabled>确认操作</button><button id="reset-selection-btn">重新选择</button></div></div>
-                    <div id="action-phase-panel" class="hidden"><p id="action-phase-prompt"></p><div id="skill-buttons-container"></div><button id="end-turn-btn" class="end-turn-btn">结束回合</button></div>
-                </div>
-                <div id="game-log">
-                    <h4>游戏日志 / 聊天</h4>
-                    <ul id="log-list"></ul>
-                    <form id="chat-form">
-                        <input type="text" id="chat-input" placeholder="输入消息..." autocomplete="off" maxlength="200">
-                        <button type="submit">发送</button>
-                    </form>
+                <div id="waiting-actions" class="hidden">
+                     <button id="add-bot-btn" class="btn-secondary btn-sm">🤖 添加AI</button>
                 </div>
             </div>
-            <div id="skill-table">
-                <h4>技能速查表</h4><h5>单手技能</h5><table><tr><td>3</td><td>箭矢 x1</td></tr><tr><td>4</td><td>盾牌 (减免0.5伤害)</td></tr><tr><td>5</td><td>剑 (0.5基础伤害)</td></tr><tr><td>6</td><td>箭矢 x2</td></tr><tr><td>7</td><td>弓 (需配箭, 1伤害)</td></tr><tr><td>8</td><td>弩 (需配箭, 1-2伤害)</td></tr><tr><td>9</td><td>药水 (变为9时回1血)</td></tr><tr><td>10/0</td><td>TNT (变为0时1.5伤害)</td></tr></table>
-                <h5>组合技</h5><table><tr><td>5+4</td><td>锻造 (剑升级)</td></tr><tr><td>8+8</td><td>力量药水 (下次攻击x2)</td></tr><tr><td>9+9</td><td>强效治疗 (回复2血)</td></tr><tr><td>7+8</td><td>额外回合</td></tr><tr><td>0+0</td><td>生命链接 (平分血量)</td></tr><tr><td>0+1/2</td><td>重置 (对手手牌变1)</td></tr>
-                <tr><td>0+9</td><td>复活 (复活一名玩家至半血)</td></tr>
-                </table>
+
+            <div id="game-board">
+                <div id="players-container">
+                    </div>
+                
+                <div id="action-panel-container">
+                    <div id="add-number-panel" class="control-panel">
+                        <p id="action-prompt" class="prompt-text">请选择行动...</p>
+                        <div class="action-buttons">
+                            <button id="confirm-add-btn" class="btn-primary" disabled>确认</button>
+                            <button id="reset-selection-btn" class="btn-secondary">重置</button>
+                        </div>
+                    </div>
+                    <div id="action-phase-panel" class="control-panel hidden">
+                        <p id="action-phase-prompt" class="prompt-text">技能阶段</p>
+                        <div id="skill-buttons-container" class="skill-grid"></div>
+                        <button id="end-turn-btn" class="btn-dark end-turn-btn">跳过/结束</button>
+                    </div>
+                </div>
+
+                <div id="spectator-box" class="hidden glass-panel-sm">
+                    <h4>👁️ 观战席 (<span id="spectator-count">0</span>)</h4>
+                    <ul id="spectator-list"></ul>
+                </div>
+
+                <div id="game-log" class="glass-panel">
+                    <div class="log-header">战况记录</div>
+                    <ul id="log-list" class="custom-scrollbar"></ul>
+                    <div id="chat-container">
+                        <div id="quick-chat-panel" class="hidden"></div>
+                        <form id="chat-form">
+                            <button type="button" id="quick-chat-btn" class="btn-icon">💬</button>
+                            <input type="text" id="chat-input" placeholder="按 Enter 发送..." autocomplete="off" maxlength="200">
+                            <button type="submit" class="btn-send">➤</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div id="skill-table" class="glass-panel side-panel">
+                <h4>📚 技能手册</h4>
+                <div class="skill-section">
+                    <h5>单手点数效果</h5>
+                    <div class="skill-grid-mini">
+                        <div class="skill-item"><b>3</b> <span>箭矢 x1</span></div>
+                        <div class="skill-item"><b>4</b> <span>盾 (减伤)</span></div>
+                        <div class="skill-item"><b>5</b> <span>剑 (攻击)</span></div>
+                        <div class="skill-item"><b>6</b> <span>箭矢 x2</span></div>
+                        <div class="skill-item"><b>7</b> <span>弓 (需箭)</span></div>
+                        <div class="skill-item"><b>8</b> <span>弩 (需箭)</span></div>
+                        <div class="skill-item"><b>9</b> <span>药水 (回血)</span></div>
+                        <div class="skill-item"><b>0</b> <span>TNT (爆炸)</span></div>
+                    </div>
+                </div>
+                <div class="skill-section">
+                    <h5>双手组合技</h5>
+                    <ul class="combo-list">
+                        <li><b>5+4</b> 锻造 (升级剑)</li>
+                        <li><b>8+8</b> 力量 (下击x2)</li>
+                        <li><b>9+9</b> 强效治疗 (+2血)</li>
+                        <li><b>7+8</b> 额外回合</li>
+                        <li><b>0+0</b> 生命链接</li>
+                        <li><b>0+9</b> 复活队友</li>
+                    </ul>
+                </div>
             </div>
         </div>
-        <div id="game-over-modal" class="hidden"><div class="modal-content"><h2>游戏结束！</h2><p id="winner-text"></p><button id="play-again-btn">返回大厅</button></div></div>
 
-        <div id="upload-modal" class="hidden">
-            <div class="modal-content">
-                <h2>上传卡片背景</h2>
-                <p>请选择一张图片并裁剪至合适大小。</p>
-                <input type="file" id="image-input" accept="image/*">
+        <div id="game-over-modal" class="modal hidden">
+            <div class="modal-content glass-card">
+                <h2 class="victory-title">GAME OVER</h2>
+                <p id="winner-text" class="winner-name"></p>
+                <p id="gold-earned-text" class="gold-text hidden"></p>
+                <button id="play-again-btn" class="btn-primary glow">返回大厅</button>
+            </div>
+        </div>
+
+        <div id="upload-modal" class="modal hidden">
+            <div class="modal-content glass-card">
+                <h2>更换卡面</h2>
+                <p>上传图片并裁剪</p>
+                <input type="file" id="image-input" accept="image/*" class="file-input">
                 <div id="cropper-container">
                     <img id="image-to-crop">
                 </div>
                 <div class="modal-actions">
-                    <button id="confirm-upload-btn">确认上传</button>
-                    <button id="cancel-upload-btn">取消</button>
+                    <button id="confirm-upload-btn" class="btn-success">上传</button>
+                    <button id="cancel-upload-btn" class="btn-secondary">取消</button>
                 </div>
             </div>
         </div>
 
+        <div id="shop-modal" class="modal hidden">
+            <div class="modal-content glass-card large-modal">
+                <h2>✨ 道具商店</h2>
+                <div class="shop-layout">
+                    <div id="shop-preview-area">
+                        <h4>实时预览</h4>
+                        <div id="preview-card" class="player-card">
+                            <div id="preview-border" class="card-border"></div>
+                            <div class="player-card-content">
+                                <h3 id="preview-nickname">Player</h3>
+                                <p>❤️ HP: 10 / 10</p>
+                                <div class="player-hands">
+                                    <div class="hand"><div class="hand-number">1</div></div>
+                                    <div class="hand"><div class="hand-number">1</div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="shop-items-area">
+                        <h4>卡框特效</h4>
+                        <div id="border-items-list" class="shop-grid"></div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button id="close-shop-btn" class="btn-secondary">关闭商店</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="gm-modal" class="modal hidden">
+            <div class="modal-content glass-card">
+                <h2>GM 管理控制台</h2>
+                <div class="gm-section">
+                    <h4>修改数据</h4>
+                    <form id="gm-modify-form">
+                        <input type="text" id="gm-target-user" placeholder="目标用户名" class="input-dark">
+                        <select id="gm-modify-key" class="select-dark">
+                            <option value="gold">金币 (gold)</option>
+                            <option value="nickname">昵称 (nickname)</option>
+                        </select>
+                        <input type="text" id="gm-modify-value" placeholder="新值" class="input-dark">
+                        <button type="submit" class="btn-primary">执行</button>
+                    </form>
+                </div>
+                <div class="gm-section">
+                    <h4>封禁用户</h4>
+                    <form id="gm-ban-form">
+                        <input type="text" id="gm-ban-user" placeholder="用户名" class="input-dark">
+                        <button type="submit" class="btn-danger">永久封禁</button>
+                    </form>
+                </div>
+                <div class="modal-actions">
+                    <button id="close-gm-modal-btn" class="btn-secondary">关闭</button>
+                </div>
+            </div>
+        </div>
     </div>
     
     <audio id="attack-sound" src="assets/attack.mp3" preload="auto"></audio>
+    <audio id="voice-hurry-up" src="assets/hurry-up.mp3" preload="auto"></audio>
+    <audio id="voice-nice-play" src="assets/nice-play.mp3" preload="auto"></audio>
+    <audio id="voice-not-bad" src="assets/not-bad.mp3" preload="auto"></audio>
+    <audio id="voice-let-me-think" src="assets/let-me-think.mp3" preload="auto"></audio>
     
     <script src="script.js"></script>
 </body>
